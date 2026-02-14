@@ -5,9 +5,7 @@
 - name: Generate SSH Keypair for service
   when:
     - gen_ssh_keypair_enable | bool
-    - (gen_only_files is not none)
-      or
-      ('sshkey' | regex_search(gen_only_files) is not none)
+    - "'sshkey' | regex_search(gen_file_filter)"
   community.crypto.openssh_keypair:
     path: "{{ gen_role_dir_path }}/files/{{ gen_ssh_keypair_name }}"
     type: "{{ gen_ssh_keypair_type }}"

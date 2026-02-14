@@ -29,6 +29,9 @@
     group: "{{ ansible_user }}"
     mode: "0640"
     backup: true
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/defaults_configs.yml.j2' ignore missing %>
+<% endfor %>
 
 ########################################
 # <<gen_role_name>> networks
@@ -36,6 +39,9 @@
 <<gen_role_name>>_networks:
   default:
     driver: bridge
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/defaults_networks.yml.j2' ignore missing %>
+<% endfor %>
 
 
 ########################################
@@ -50,9 +56,9 @@
     owner: "{{ site_config_owner }}"
     group: "{{ site_config_group }}"
     mode: "{{ site_config_mode }}"
-  # database__passwd:
-  #   content: "{{ postgres_roles.<<gen_role_name>>.password }}"
-  #   file: "{{ <<gen_role_name>>_secrets_dir }}/database__passwd"
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/defaults_secrets.yml.j2' ignore missing %>
+<% endfor %>
 
 
 ########################################
@@ -62,7 +68,9 @@
 <% for service in gen_role_services %>
   - <<service>>
 <% endfor %>
-
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/defaults_service_names.yml.j2' ignore missing %>
+<% endfor %>
 
 ########################################
 # <<gen_role_name>> volumes
@@ -71,4 +79,7 @@
 <% for service in gen_role_services %>
   <<service|to_varname>>_data:
     driver: local
+<% endfor %>
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/defaults_volumes.yml.j2' ignore missing %>
 <% endfor %>

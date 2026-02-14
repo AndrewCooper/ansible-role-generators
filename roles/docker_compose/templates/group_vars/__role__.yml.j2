@@ -1,0 +1,48 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+# <<group_item>> group_vars file for <<gen_role_name>>
+
+########################################
+# <<gen_role_name>> domain names
+########################################
+
+
+########################################
+# <<gen_role_name>> project
+########################################
+
+
+########################################
+# <<gen_role_name>> configs
+########################################
+
+
+########################################
+# <<gen_role_name>> networks
+########################################
+
+
+########################################
+# <<gen_role_name>> secrets
+########################################
+
+
+########################################
+# <<gen_role_name>> services
+########################################
+
+
+########################################
+# <<gen_role_name>> volumes
+########################################
+<% for service in gen_role_services %>
+
+
+########################################
+# <<gen_role_name>> <<service>> service
+########################################
+<% endfor %>
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/group_vars.yml.j2' ignore missing %>
+<% endfor %>

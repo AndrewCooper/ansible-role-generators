@@ -11,33 +11,79 @@
   ansible.builtin.set_fact:
     gen_dest_dir: "{{ lookup('ansible.builtin.env', 'PWD') }}"
 
-- name: Deploy role from skeleton template
+# Role directory — base structure, per-service files, then overlays
+- name: Deploy role base skeleton template
   ansible.builtin.include_tasks:
-    file: role.yml
+    file: render_skeleton.yml
+  vars:
+    dest_path: "{{ gen_role_dir_path }}"
+    skeleton_path: "templates/_role_base"
 
-- name: Deploy playbook from skeleton template
-  when: gen_playbook_enable
+- name: Deploy role service skeleton template
   ansible.builtin.include_tasks:
-    file: playbook.yml
+    file: render_skeleton.yml
+  loop: "{{ gen_role_services }}"
+  loop_control:
+    loop_var: service_item
+    label: "{{ service_item }}"
+  vars:
+    dest_path: "{{ gen_role_dir_path }}"
+    skeleton_path: "templates/_role_service"
+    rename_regex: '__service__'
+    rename_replacement: '{{ service_item }}'
 
-- name: Deploy group_vars from skeleton template
-  when: gen_group_vars_enable
+- name: Deploy overlay skeleton templates
   ansible.builtin.include_tasks:
-    file: group_vars.yml
+    file: render_skeleton.yml
+  vars:
+    dest_path: "{{ gen_role_dir_path }}"
+    skeleton_path: "templates/overlay_{{ overlay_item }}/templates"
+  loop: "{{ gen_role_overlays }}"
+  loop_control:
+    loop_var: overlay_item
+    label: "{{ overlay_item }}"
 
-- name: Deploy vaulted vars from skeleton template
-  when: gen_vaulted_vars_enable
-  ansible.builtin.include_tasks:
-    file: vaulted_vars.yml
-
-- name: Deploy SSH key pair from skeleton template
-  when: gen_ssh_keypair_enable
+# Separate artifacts
+- name: Deploy SSH key pair
+  when: gen_ssh_keypair_enable | bool
   ansible.builtin.include_tasks:
     file: ssh_keypair.yml
 
-- name: Deploy service defaults from skeleton template
+- name: Deploy playbook from skeleton template
+  when: gen_playbook_enable | bool
   ansible.builtin.include_tasks:
-    file: service_each.yml
-  loop: "{{ gen_role_services }}"
+    file: render_skeleton.yml
+  vars:
+    dest_path: "{{ gen_rootdir_playbooks }}"
+    skeleton_path: "templates/playbook"
+    rename_regex: '__playbook__.yml'
+    rename_replacement: '{{ gen_playbook_name }}'
+
+- name: Deploy group_vars from skeleton template
+  when: gen_group_vars_enable | bool
+  ansible.builtin.include_tasks:
+    file: render_skeleton.yml
+  vars:
+    dest_path: "{{ gen_rootdir_group_vars }}/{{ group_item }}/"
+    skeleton_path: "templates/group_vars"
+    rename_regex: '__role__'
+    rename_replacement: '{{ gen_role_name }}'
+  loop: "{{ gen_group_vars_groups }}"
   loop_control:
-    loop_var: service_name
+    label: "{{ group_item }}"
+    loop_var: group_item
+
+- name: Deploy vaulted group_vars from skeleton template
+  when: gen_vaulted_vars_enable | bool
+  ansible.builtin.include_tasks:
+    file: render_skeleton.yml
+  vars:
+    dest_path: "{{ gen_rootdir_group_vars }}/{{ group_item }}/"
+    skeleton_path: "templates/group_vars_vaulted"
+    rename_regex: '__role__'
+    rename_replacement: '{{ gen_role_name }}'
+    render_force: false
+  loop: "{{ gen_vaulted_vars_groups }}"
+  loop_control:
+    label: "{{ group_item }}"
+    loop_var: group_item

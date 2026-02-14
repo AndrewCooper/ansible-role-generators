@@ -1,0 +1,31 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+# This playbook deploys the <<gen_role_name>> stack.
+
+- name: Deploy <<gen_role_name>> stack
+  hosts: <<gen_role_name>>
+  become: false
+  gather_facts: true
+  pre_tasks:
+    - name: Run site_config
+      ansible.builtin.import_role:
+        name: site_config
+      tags: site_config
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/playbook_pre_tasks.yml.j2' ignore missing %>
+<% endfor %>
+  tasks:
+    - name: Run <<gen_role_name>>
+      ansible.builtin.import_role:
+        name: <<gen_role_dir_name>>
+      tags: <<gen_role_name>>
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/playbook_tasks.yml.j2' ignore missing %>
+<% endfor %>
+  post_tasks:
+    - name: Placeholder
+      ansible.builtin.meta: noop
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/playbook_post_tasks.yml.j2' ignore missing %>
+<% endfor %>

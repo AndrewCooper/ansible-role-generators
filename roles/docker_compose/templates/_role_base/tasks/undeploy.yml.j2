@@ -33,3 +33,7 @@
   ansible.builtin.file:
     path: "{{ <<gen_role_name>>_project_dir }}"
     state: absent
+
+    <% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/tasks_undeploy.yml.j2' ignore missing %>
+<% endfor %>

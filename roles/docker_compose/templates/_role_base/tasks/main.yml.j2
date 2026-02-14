@@ -12,6 +12,10 @@
     group: "{{ site_config_group }}"
     mode: "{{ site_config_mode }}"
 
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/tasks_source.yml.j2' ignore missing %>
+<% endfor %>
+
 - name: Generate Docker Compose file
   ansible.builtin.template:
     src: docker-compose.yml.j2
@@ -35,8 +39,12 @@
 - name: Flush Config Change Handlers
   ansible.builtin.meta: flush_handlers
 
-- name: Restore Data if needed
-  ansible.builtin.import_tasks: restore.yml
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/tasks_restore.yml.j2' ignore missing %>
+<% endfor %>
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/tasks_init.yml.j2' ignore missing %>
+<% endfor %>
 
 - name: Deploy project
   become: true

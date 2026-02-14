@@ -19,7 +19,7 @@ Each generator is a role under `roles/` paired with a playbook under `playbooks/
 
 ## Template Conventions
 
-Templates for generated roles live in `roles/<generator>/templates/`. They are rendered by the generator using `ansible.builtin.template` via the `role.yml` task, which walks the tree with `community.general.filetree`.
+Templates for generated roles live in `roles/<generator>/templates/`. They are rendered by the generator using `ansible.builtin.template` via `render_skeleton.yml`, which walks the tree with `community.general.filetree`.
 
 **Custom delimiters are required** in any template that will itself be used as an Ansible template after generation. Use `<< >>` for variables and `<% %>` for blocks instead of the standard `{{ }}` and `{% %}`. Standard delimiters are reserved for the generator's own Jinja2 context.
 

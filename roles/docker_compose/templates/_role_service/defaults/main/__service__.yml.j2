@@ -2,10 +2,10 @@
 <%- set service_varname = service_item | to_varname -%>
 # SPDX-License-Identifier: <<gen_meta_license>>
 ---
-# defaults file for <<gen_role_name>> <<service>> service
+# <<service_item>> service defaults file for <<gen_role_name>>
 
 ########################################
-# <<gen_role_name>> <<service>> service
+# <<gen_role_name>> <<service_item>> service
 ########################################
 
 <<gen_role_name>>_<<service_varname>>_build: ~
@@ -43,9 +43,15 @@
 <<gen_role_name>>_<<service_varname>>_image: "docker.io/<<gen_role_name>>-<<service_item>>:{{ <<gen_role_name>>_<<service_varname>>_version }}"
 
 <<gen_role_name>>_<<service_varname>>_labels:
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/defaults_service_labels.yml.j2' ignore missing %>
+<% endfor %>
 
 <<gen_role_name>>_<<service_varname>>_networks:
   default: {}
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/defaults_service_networks.yml.j2' ignore missing %>
+<% endfor %>
 
 <<gen_role_name>>_<<service_varname>>_port_http_hostip: 0.0.0.0
 <<gen_role_name>>_<<service_varname>>_port_http_published: 80

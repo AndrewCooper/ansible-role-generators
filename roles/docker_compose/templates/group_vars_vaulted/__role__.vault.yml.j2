@@ -2,3 +2,6 @@
 # SPDX-License-Identifier: <<gen_meta_license>>
 ---
 # <<group_item>> vaulted vars file for <<gen_role_name>>
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/group_vars_vaulted.yml.j2' ignore missing %>
+<% endfor %>
