@@ -1,0 +1,71 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Renders a skeleton directory tree into dest_path, templating all .j2 files.
+#
+# Required:
+#   dest_path:           Target directory to write rendered files into.
+#   skeleton_path:       Skeleton template directory, relative to this role.
+# Optional:
+#   gen_file_filter:     Regex to restrict which skeleton paths are rendered. Default '.*' renders all.
+#   rename_regex:        Regex matched against the output path for token substitution.
+#   rename_replacement:  Replacement string for rename_regex matches.
+#   render_force:        Whether to overwrite existing files. Default true.
+
+- name: Set defaults for optional variables
+  ansible.builtin.set_fact:
+    # Prefixed to avoid overwriting caller vars with the same name
+    _skel_file_filter: "{{ gen_file_filter | default('.*') }}"
+    # '^$' matches only an empty string — a no-op when no rename is needed
+    _skel_rename_regex: "{{ rename_regex | default('^$') }}"
+    _skel_rename_replacement: "{{ rename_replacement | default('') }}"
+    _skel_render_force: "{{ render_force | default(true) }}"
+
+- name: Assert required variables are defined
+  ansible.builtin.assert:
+    that:
+      - dest_path is defined
+      - skeleton_path is defined
+    fail_msg: "dest_path and skeleton_path must be defined"
+
+- name: Create destination directory
+  ansible.builtin.file:
+    path: '{{ dest_path }}'
+    state: directory
+    mode: '0755'
+
+- name: Create subdirectories from [{{ skeleton_path }}]
+  when: skeleton_item.state == 'directory'
+  vars:
+    # 1. Join dest and relative path  2. Apply token rename
+    _dest: >-
+      {{ (dest_path, skeleton_item.path) | path_join
+         | regex_replace(_skel_rename_regex, _skel_rename_replacement) }}
+  ansible.builtin.file:
+    path: '{{ _dest }}'
+    state: directory
+    mode: '0755'
+  loop: "{{ query('community.general.filetree', skeleton_path) }}"
+  loop_control:
+    label: '{{ skeleton_item.path }}'
+    loop_var: skeleton_item
+
+- name: Render templates from [{{ skeleton_path }}]
+  when:
+    - skeleton_item.state == 'file'
+    - skeleton_item.src | basename != '.git_keep'
+    - skeleton_item.path | regex_search(_skel_file_filter)
+  vars:
+    # 1. Join dest and relative path  2. Strip .j2 extension  3. Apply token rename
+    _dest: >-
+      {{ (dest_path, skeleton_item.path) | path_join
+         | splitext | first
+         | regex_replace(_skel_rename_regex, _skel_rename_replacement) }}
+  ansible.builtin.template:
+    src: '{{ skeleton_item.src }}'
+    dest: '{{ _dest }}'
+    mode: '{{ skeleton_item.mode }}'
+    force: '{{ _skel_render_force }}'
+  loop: "{{ query('community.general.filetree', skeleton_path, exclude='^.*\\.git_keep$') }}"
+  loop_control:
+    label: '{{ skeleton_item.path }}'
+    loop_var: skeleton_item

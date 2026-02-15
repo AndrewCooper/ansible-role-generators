@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# defaults file for molecule
+
+gen_rootdir_roles: "{{ gen_dest_dir }}/roles"
+gen_rootdir_playbooks: "{{ gen_dest_dir }}/playbooks"
+gen_rootdir_group_vars: "{{ gen_dest_dir }}/group_vars"
+
+# gen_role_name: prompt from user
+gen_role_dir_prefix: "" # e.g. "docker_"
+gen_role_dir_name: "{{ gen_role_dir_prefix }}{{ gen_role_name }}"
+gen_role_dir_path: "{{ gen_rootdir_roles }}/{{ gen_role_dir_name }}"
+
+gen_molecule_scenarios:
+  - default
+
+gen_molecule_ansible_host: localhost
+
+gen_file_filter: '.*'

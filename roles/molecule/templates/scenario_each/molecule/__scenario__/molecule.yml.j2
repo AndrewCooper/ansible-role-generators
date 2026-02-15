@@ -1,0 +1,35 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+lint: |
+  set -e
+  yamllint .
+  ansible-lint
+
+platforms: []
+
+ansible:
+  executor:
+    backend: ansible-playbook
+    args:
+      ansible_playbook:
+        - --inventory=inventory.yml
+        - --verbose
+        - --diff
+  env:
+    ANSIBLE_CALLBACK_RESULT_FORMAT: yaml
+    ANSIBLE_CALLBACK_FORMAT_PRETTY: true
+    # Ensure ansible can find the repository's roles during molecule runs
+    ANSIBLE_ROLES_PATH: "../../../../roles"
+    ANSIBLE_VAULT_IDENTITY: "molecule"
+    ANSIBLE_VAULT_PASSWORD_FILE: "../.molecule-vault-password"
+  playbooks:
+    create: create.yml
+    prepare: prepare.yml
+    converge: converge.yml
+    verify: verify.yml
+    cleanup: cleanup.yml
+    destroy: destroy.yml
+
+verifier:
+  name: ansible

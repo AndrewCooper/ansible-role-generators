@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# main tasks file for molecule scenario role_generator
+
+- name: Capture current working directory
+  when: gen_dest_dir is not defined
+  ansible.builtin.set_fact:
+    gen_dest_dir: "{{ lookup('ansible.builtin.env', 'PWD') }}"
+
+# Scenario directory — base structure, per-service files, then overlays
+- name: Deploy scenario base skeleton template
+  ansible.builtin.include_tasks:
+    file: render_skeleton.yml
+  vars:
+    dest_path: "{{ gen_role_dir_path }}"
+    skeleton_path: "templates/scenario_each"
+    rename_regex: '__scenario__'
+    rename_replacement: '{{ scenario }}'
+  loop: "{{ gen_molecule_scenarios }}"
+  loop_control:
+    loop_var: scenario

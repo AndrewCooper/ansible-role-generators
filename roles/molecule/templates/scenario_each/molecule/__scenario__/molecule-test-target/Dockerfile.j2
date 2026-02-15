@@ -1,0 +1,11 @@
+FROM lscr.io/linuxserver/openssh-server:latest
+
+RUN apk add --no-cache \
+    sudo \
+    git \
+    python3 \
+    py3-requests \
+    docker-cli \
+    docker-cli-buildx \
+    docker-cli-compose \
+    rsync

@@ -1,0 +1,58 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+# Scenario variables for molecule
+molecule_tmpdir: /tmp/molecule
+ansible_vault_id: "{{ lookup('env', 'ANSIBLE_VAULT_IDENTITY') }}"
+ansible_vault_password: "{{ lookup('file', lookup('env', 'ANSIBLE_VAULT_PASSWORD_FILE')) }}"
+
+########################################
+# site_config vars (dependency)
+########################################
+site_config_dir: "{{ molecule_tmpdir }}/srv"
+
+
+########################################
+# <<gen_role_name>> domain names
+########################################
+
+
+########################################
+# <<gen_role_name>> project
+########################################
+
+
+########################################
+# <<gen_role_name>> configs
+########################################
+
+
+########################################
+# <<gen_role_name>> networks
+########################################
+
+
+########################################
+# <<gen_role_name>> secrets
+########################################
+
+
+########################################
+# <<gen_role_name>> services
+########################################
+
+
+########################################
+# <<gen_role_name>> volumes
+########################################
+<<gen_role_name>>_remove_volumes: true # remove volumes on undeploy
+<% for service in gen_role_services %>
+
+
+########################################
+# <<gen_role_name>> <<service>> service
+########################################
+<% endfor %>
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/vars.yml.j2' ignore missing %>
+<% endfor %>

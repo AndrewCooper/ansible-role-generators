@@ -1,0 +1,46 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+- name: Create
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Create test image
+      community.docker.docker_image:
+        name: molecule-test-target:latest
+        build:
+          path: molecule-test-target/
+          dockerfile: Dockerfile
+        source: build
+        force_source: true
+
+    - name: Create test container with Docker socket
+      community.docker.docker_container:
+        name: molecule-test-target
+        etc_hosts:
+          host.docker.internal: host-gateway
+        image: molecule-test-target:latest
+        hostname: molecule-test-target # optional
+        env:
+          PUID: '1000'
+          PGID: '1000'
+          TZ: 'America/Chicago'
+          # PUBLIC_KEY: yourpublickey # optional
+          # PUBLIC_KEY_FILE: /path/to/file # optional
+          # PUBLIC_KEY_DIR: /path/to/directory/containing/_only_/pubkeys # optional
+          # PUBLIC_KEY_URL: https://github.com/username.keys # optional
+          SUDO_ACCESS: 'true' # optional
+          PASSWORD_ACCESS: 'true' # optional
+          USER_PASSWORD: 'password' # optional
+          # USER_PASSWORD_FILE: /path/to/file # optional
+          USER_NAME: 'molecule' # optional
+          LOG_STDOUT: 'true' # optional
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - "{{ molecule_tmpdir }}:{{ molecule_tmpdir }}"
+        working_dir: "{{ molecule_tmpdir }}"
+        published_ports:
+          - 2222:2222
+        restart_policy: unless-stopped

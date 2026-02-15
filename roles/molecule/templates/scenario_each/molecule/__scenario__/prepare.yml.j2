@@ -1,0 +1,31 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+- name: Prepare localhost
+  hosts: localhost
+  connection: local
+  become: false
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Ensure artifacts dir exists on controller
+      run_once: true
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/artifacts"
+        state: directory
+        mode: '0755'
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/prepare_localhost_tasks.yml.j2' ignore missing %>
+<% endfor %>
+
+- name: Prepare
+  hosts: molecule-test-target
+  become: false
+  vars_files:
+    - vars.yml
+  tasks:
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/prepare_target_tasks.yml.j2' ignore missing %>
+<% endfor %>
+    - name: Placeholder
+      ansible.builtin.meta: noop

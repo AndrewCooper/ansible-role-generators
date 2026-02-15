@@ -1,0 +1,16 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+all:
+  hosts:
+    molecule-test-target:
+      ansible_host: "<<gen_molecule_ansible_host>>"
+      ansible_port: 2222
+      ansible_user: molecule
+      ansible_password: password
+      ansible_become_password: password
+      ansible_connection: ssh
+      ansible_python_interpreter: auto
+      ansible_ssh_common_args: >-
+        -o StrictHostKeyChecking=no
+        -o UserKnownHostsFile=/dev/null

@@ -1,0 +1,12 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+- name: Destroy
+  hosts: localhost
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Destroy test container
+      community.docker.docker_container:
+        name: molecule-test-target
+        state: absent

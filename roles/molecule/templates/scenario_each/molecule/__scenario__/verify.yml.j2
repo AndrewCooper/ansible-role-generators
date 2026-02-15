@@ -1,0 +1,27 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+- name: Verify
+  hosts: molecule-test-target
+  gather_facts: true
+  become: true
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Load role vars exported by converge
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/artifacts/converge_vars.yml"
+<% for service in gen_role_services %>
+
+    - name: Gather <<gen_role_name>> <<service|to_varname>> container info
+      community.docker.docker_container_info:
+        name: "{{ <<gen_role_name>>_<<service|to_varname>>_container_name }}"
+      register: _<<service|to_varname>>_container_info
+
+    - name: Assert <<gen_role_name>> <<service|to_varname>> container is running
+      ansible.builtin.assert:
+        that:
+          - _<<service|to_varname>>_container_info is defined
+          - _<<service|to_varname>>_container_info.exists | default(false) | bool
+          - _<<service|to_varname>>_container_info.container.State.Running | default(false) | bool
+<% endfor %>

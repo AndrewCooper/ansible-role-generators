@@ -1,0 +1,43 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+- name: Cleanup after tests
+  hosts: molecule-test-target
+  become: false
+  vars_files:
+    - vars.yml
+  ignore_unreachable: true
+  gather_facts: false
+  tasks:
+    - name: Try to gather facts
+      ansible.builtin.setup:
+      register: setup_facts
+
+    - name: End play because molecule-test-target is already destroyed
+      ansible.builtin.meta: end_play
+      when: setup_facts is unreachable
+
+    - name: Run role for removal  # noqa ignore-errors
+      ansible.builtin.import_role:
+        name: "<<gen_role_dir_name>>"
+        tasks_from: undeploy
+      ignore_errors: true
+
+    - name: Remove scenario config dir
+      become: true
+      ansible.builtin.file:
+        path: "{{ site_config_dir }}/"
+        state: absent
+
+
+- name: Cleanup localhost
+  hosts: localhost
+  connection: local
+  become: false
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Remove artifacts dir on controller
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/artifacts"
+        state: absent

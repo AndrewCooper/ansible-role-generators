@@ -1,0 +1,48 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+- name: Converge
+  hosts: molecule-test-target
+  become: false
+  vars_files:
+    - vars.yml
+  pre_tasks:
+    - name: Run site_config
+      ansible.builtin.import_role:
+        name: site_config
+      tags: site_config
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/converge_pre_tasks.yml.j2' ignore missing %>
+<% endfor %>
+  tasks:
+    - name: Run <<gen_role_name>>
+      ansible.builtin.import_role:
+        name: <<gen_role_dir_name>>
+      tags: <<gen_role_name>>
+<% for overlay in gen_role_overlays %>
+<% include 'overlay_' + overlay + '/fragments/converge_tasks.yml.j2' ignore missing %>
+<% endfor %>
+
+    - name: Render stable exported vars artifact from template
+      become: false
+      delegate_to: localhost
+      run_once: true
+      ansible.builtin.template:
+        src: "templates/converge_vars.j2"
+        dest: "{{ playbook_dir }}/artifacts/converge_vars.yml"
+        mode: "0640"
+      changed_when: false
+
+    - name: Get final docker compose config
+      ansible.builtin.command:
+        cmd: docker compose --all-resources --profile='*' config
+        chdir: "{{ <<gen_role_name>>_project_dir }}"
+      register: compose_config
+      changed_when: false
+
+    - name: Write config to artifact file
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ compose_config.stdout }}"
+        dest: "{{ playbook_dir }}/artifacts/docker-compose.new.yml"
+        mode: "0640"
