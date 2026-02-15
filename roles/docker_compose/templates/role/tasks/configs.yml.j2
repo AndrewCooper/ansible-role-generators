@@ -12,13 +12,38 @@
     group: "{{ site_config_group }}"
     mode: "{{ site_config_mode }}"
 
-- name: Generate configs templates
+- name: Render configs templates
   become: true # owner/group setting
+  when: item.value.template is defined
   ansible.builtin.template:
     src: "{{ item.value.template }}"
     dest: "{{ item.value.file }}"
     owner: "{{ item.value.owner | default(site_config_owner) }}"
     group: "{{ item.value.group | default(site_config_group) }}"
     mode: "{{ item.value.mode | default(site_config_mode) }}"
-  loop: "{{ <<gen_role_name>>_configs | dict2items }}"
+  loop: "{{ <<gen_role_name>>_configs | default({}, boolean=true) | dict2items | selectattr('value.template', 'defined') }}"
+  notify: <<gen_role_name>> config changed
+
+- name: Render inline config templates
+  become: true # owner/group setting
+  when: item.value.content is defined
+  ansible.builtin.copy:
+    content: "{{ item.value.content }}"
+    dest: "{{ item.value.file }}"
+    owner: "{{ item.value.owner | default(site_config_owner) }}"
+    group: "{{ item.value.group | default(site_config_group) }}"
+    mode: "{{ item.value.mode | default(site_config_mode) }}"
+  loop: "{{ <<gen_role_name>>_configs | default({}, boolean=true) | dict2items | selectattr('value.content', 'defined') }}"
+  notify: <<gen_role_name>> config changed
+
+- name: Copy config files
+  become: true # owner/group setting
+  when: item.value.src is defined
+  ansible.builtin.copy:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.file }}"
+    owner: "{{ item.value.owner | default(site_config_owner) }}"
+    group: "{{ item.value.group | default(site_config_group) }}"
+    mode: "{{ item.value.mode | default(site_config_mode) }}"
+  loop: "{{ <<gen_role_name>>_configs | default({}, boolean=true) | dict2items | selectattr('value.src', 'defined') }}"
   notify: <<gen_role_name>> config changed
