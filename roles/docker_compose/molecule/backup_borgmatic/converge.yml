@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Converge
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    gen_role_name: test_service
+    gen_dest_dir: "{{ playbook_dir }}/artifacts"
+    gen_role_overlays:
+      - backup_borgmatic
+  tasks:
+    - name: Run docker_compose generator
+      ansible.builtin.include_role:
+        name: docker_compose

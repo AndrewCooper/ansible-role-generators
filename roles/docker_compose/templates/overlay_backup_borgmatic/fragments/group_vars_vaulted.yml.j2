@@ -1,0 +1,2 @@
+v_borgmatic__<<gen_role_name>>__passphrase: |-
+  <<lookup('ansible.builtin.password', '/dev/null length=40 chars=ascii_letters,digits')>>

@@ -1,0 +1,97 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: MIT-0
+---
+# borgmatic service defaults file for <<gen_role_name>>
+
+########################################
+# <<gen_role_name>> borgmatic service
+########################################
+
+<<gen_role_name>>_borgmatic_build: ~
+
+<<gen_role_name>>_borgmatic_command: ~
+<<gen_role_name>>_borgmatic_configs:
+  - source: borgmatic
+    target: "{{ _<<gen_role_name>>_borgmatic_config_path }}/borgmatic.yml"
+
+<<gen_role_name>>_borgmatic_container_name: "{{ <<gen_role_name>>_project_name }}-borgmatic"
+
+<<gen_role_name>>_borgmatic_depends_on:
+
+<<gen_role_name>>_borgmatic_dir: "{{ <<gen_role_name>>_project_dir }}/borgmatic"
+
+<<gen_role_name>>_borgmatic_entrypoint: ~
+
+<<gen_role_name>>_borgmatic_env:
+  TZ: "America/Chicago"
+  BACKUP_CRON: "0 1 * * *"
+
+<<gen_role_name>>_borgmatic_env_file: "{{ <<gen_role_name>>_borgmatic_dir }}/borgmatic.env"
+
+<<gen_role_name>>_borgmatic_environment: {}
+
+<<gen_role_name>>_borgmatic_expose:
+
+<<gen_role_name>>_borgmatic_healthcheck:
+  disable: false
+
+<<gen_role_name>>_borgmatic_hostname: ~
+
+<<gen_role_name>>_borgmatic_image: "ghcr.io/borgmatic-collective/borgmatic:{{ <<gen_role_name>>_borgmatic_version }}"
+
+<<gen_role_name>>_borgmatic_labels:
+
+<<gen_role_name>>_borgmatic_networks:
+  default: {}
+
+<<gen_role_name>>_borgmatic_ports:
+
+<<gen_role_name>>_borgmatic_profiles:
+
+<<gen_role_name>>_borgmatic_restart: unless-stopped
+
+<<gen_role_name>>_borgmatic_secrets:
+  - borgmatic__passphrase
+  - borgmatic__sshkey
+  # - database__passwd
+
+<<gen_role_name>>_borgmatic_version: 2.0.12
+
+<<gen_role_name>>_borgmatic_volumes:
+  - "app_data:/mnt/app_data:ro" # backup source
+  - "borg_data:{{ _<<gen_role_name>>_borgmatic_data_path }}" # borgmatic cached data
+
+
+########################################
+# <<gen_role_name>> borgmatic config
+########################################
+
+<<gen_role_name>>_borgmatic_sshkey:
+  src: "<<gen_ssh_keypair_name>>.vault"
+  dest: "id_ed25519"
+
+# The local path or Borg URL of the repository.
+# See https://torsion.org/borgmatic/docs/reference/configuration/ for format details.
+<<gen_role_name>>_borgmatic_repo: 'ssh://user@backup.example.com:2222/./repo'
+
+# List of source directories and files to back up. Globs and tildes
+# are expanded.
+<<gen_role_name>>_borgmatic_source_directories:
+  - /mnt/app_data
+
+# Number of daily archives to keep.
+<<gen_role_name>>_borgmatic_keep_daily: "{{ borgmatic_keep_daily | default(7) }}"
+
+# Number of weekly archives to keep.
+<<gen_role_name>>_borgmatic_keep_weekly: "{{ borgmatic_keep_weekly | default(4) }}"
+
+# Number of monthly archives to keep.
+<<gen_role_name>>_borgmatic_keep_monthly: "{{ borgmatic_keep_monthly | default(6) }}"
+
+
+##########
+# <<gen_role_name>> restore defaults
+##########
+<<gen_role_name>>_restore_dir: "{{ site_restore_data_dir | default(<<gen_role_name>>_project_dir ~ '/borgmatic') }}/<<gen_role_name>>"
+<<gen_role_name>>_restore_script: "{{ site_restore_script_dir | default(<<gen_role_name>>_project_dir) }}/restore.sh"
+<<gen_role_name>>_restore_marker: "{{ <<gen_role_name>>_project_dir }}/restore.date.txt"

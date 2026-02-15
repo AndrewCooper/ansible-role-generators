@@ -2,4 +2,5 @@
 ---
 # vars file for docker_compose
 
-_gen_role_valid_overlays: []
+_gen_role_valid_overlays:
+  - backup_borgmatic

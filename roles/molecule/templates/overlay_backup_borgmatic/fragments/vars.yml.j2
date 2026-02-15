@@ -1,0 +1,15 @@
+
+########################################
+# <<gen_role_name>> borgmatic secrets
+########################################
+v_borgmatic__<<gen_role_name>>__passphrase: |-
+  TEST_BORG_PASSphrase_<<gen_role_name>>_MOLECULE
+v_borgwarehouse_cron_apikey: "MOLECULE_TEST_BORGWAREHOUSE_APIKEY"
+
+
+########################################
+# <<gen_role_name>> borgmatic service
+########################################
+<<gen_role_name>>_borgmatic_sshkey:
+  src: "{{ playbook_dir }}/artifacts/molecule_sshkey.vault"
+  dest: "id_ed25519"

@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Verify
+  hosts: localhost
+  gather_facts: false
+  vars:
+    _role_dir: "{{ playbook_dir }}/artifacts/roles/test_service"
+  tasks:
+    - name: Check generated role structure
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: _stat
+      loop:
+        - "{{ _role_dir }}/defaults/main/borgmatic.yml"
+        - "{{ _role_dir }}/templates/borgmatic.yml.j2"
+        - "{{ _role_dir }}/vars/main/borgmatic.yml"
+      loop_control:
+        label: "{{ item | basename }}"
+
+    - name: Assert all expected files exist
+      ansible.builtin.assert:
+        that: item.stat.exists
+        fail_msg: "Expected file not found: {{ item.item }}"
+      loop: "{{ _stat.results }}"
+      loop_control:
+        label: "{{ item.item | basename }}"
+
+    - name: Read generated defaults
+      ansible.builtin.slurp:
+        src: "{{ _role_dir }}/defaults/main/main.yml"
+      register: _defaults
+
+    - name: Assert borgmatic overlay content is present in defaults
+      vars:
+        _text: "{{ _defaults.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'borgmatic' in _text"
+          - "'borgmatic__passphrase' in _text"
+          - "'borgmatic__sshkey' in _text"
