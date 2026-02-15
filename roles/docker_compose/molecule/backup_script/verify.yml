@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Verify
+  hosts: localhost
+  gather_facts: false
+  vars:
+    _role_dir: "{{ playbook_dir }}/artifacts/roles/test_service"
+  tasks:
+    - name: Check generated role structure
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: _stat
+      loop:
+        - "{{ _role_dir }}/defaults/main/backup_script.yml"
+        - "{{ _role_dir }}/tasks/restore.yml"
+        - "{{ _role_dir }}/templates/backup.sh.j2"
+        - "{{ _role_dir }}/templates/restore.sh.j2"
+      loop_control:
+        label: "{{ item | basename }}"
+
+    - name: Assert all expected files exist
+      ansible.builtin.assert:
+        that: item.stat.exists
+        fail_msg: "Expected file not found: {{ item.item }}"
+      loop: "{{ _stat.results }}"
+      loop_control:
+        label: "{{ item.item | basename }}"
+
+    - name: Read generated tasks/main.yml
+      ansible.builtin.slurp:
+        src: "{{ _role_dir }}/tasks/main.yml"
+      register: _tasks
+
+    - name: Assert restore task is present in tasks/main.yml
+      vars:
+        _text: "{{ _tasks.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'Restore Data' in _text"

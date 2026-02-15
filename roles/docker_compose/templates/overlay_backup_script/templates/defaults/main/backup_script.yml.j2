@@ -1,0 +1,8 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: MIT-0
+---
+# defaults file for <<gen_role_name>> backup script
+
+<<gen_role_name>>_backup_data_dir: "{{ site_backup_data_dir | default(<<gen_role_name>>_project_dir + '/backup') }}/<<gen_role_name>>"
+
+<<gen_role_name>>_backup_script: "{{ site_backup_script_dir | default(<<gen_role_name>>_project_dir) }}/55.backup.<<gen_role_name>>"

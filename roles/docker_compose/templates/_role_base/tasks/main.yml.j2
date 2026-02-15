@@ -38,7 +38,6 @@
 
 - name: Flush Config Change Handlers
   ansible.builtin.meta: flush_handlers
-
 <% for overlay in gen_role_overlays %>
 <% include 'overlay_' + overlay + '/fragments/tasks_restore.yml.j2' ignore missing %>
 <% endfor %>

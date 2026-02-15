@@ -1,0 +1,12 @@
+
+- name: Remove the backup script
+  become: true
+  ansible.builtin.file:
+    path: "{{ <<gen_role_name>>_backup_script }}"
+    state: absent
+
+- name: Remove the restore script
+  become: true
+  ansible.builtin.file:
+    path: "{{ <<gen_role_name>>_restore_script }}"
+    state: absent

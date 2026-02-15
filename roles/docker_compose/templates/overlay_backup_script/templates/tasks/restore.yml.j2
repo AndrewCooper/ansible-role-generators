@@ -1,0 +1,87 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: MIT-0
+---
+# restore tasks file for <<gen_role_name>>
+
+# *****************************************************************************
+# Install backup and restore scripts
+- name: Install backup_script
+  become: true
+  ansible.builtin.template:
+    src: backup.sh.j2
+    dest: "{{ <<gen_role_name>>_backup_script }}"
+    owner: "{{ site_backup_script_owner }}"
+    group: "{{ site_backup_script_group }}"
+    mode: "{{ site_backup_script_mode }}"
+    backup: true
+
+- name: Install restore_script
+  become: true
+  ansible.builtin.template:
+    src: restore.sh.j2
+    dest: "{{ <<gen_role_name>>_restore_script }}"
+    owner: "{{ site_restore_script_owner }}"
+    group: "{{ site_restore_script_group }}"
+    mode: "{{ site_restore_script_mode }}"
+    backup: true
+
+# *****************************************************************************
+# Test the restore marker file
+
+- name: Delete state file if requested
+  when: <<gen_role_name>>_restore_force | default(false)
+  ansible.builtin.file:
+    path: "{{ <<gen_role_name>>_restore_marker }}"
+    state: absent
+
+- name: Stat restore marker file
+  ansible.builtin.stat:
+    path: "{{ <<gen_role_name>>_restore_marker }}"
+    get_checksum: false
+  register: st_restore_marker
+
+- name: Run restore tasks
+  when:
+    - not st_restore_marker.stat.exists
+    - not <<gen_role_name>>_restore_skip | default(false)
+  block:
+    - name: Make temporary log file
+      ansible.builtin.tempfile:
+        path: "{{ <<gen_role_name>>_project_dir }}"
+        prefix: "{{ <<gen_role_name>>_project_name }}-restore-"
+        suffix: .log
+        state: file
+      register: restore_logfile
+
+    - name: Print log file path
+      when: restore_logfile.path is defined
+      ansible.builtin.debug:
+        msg: |
+          To follow the restore process:
+          host: {{ inventory_hostname }}
+          path: {{ restore_logfile.path }}
+
+    - name: Run restore script
+      when: restore_logfile.path is defined
+      become: true
+      ansible.builtin.shell: |
+        set -exo pipefail
+        "{{ <<gen_role_name>>_restore_script }}" 2>&1 | tee "{{ restore_logfile.path }}"
+        echo "EXIT:$?" >> "{{ restore_logfile.path }}"
+      changed_when: true
+      async: 7200
+      poll: 10
+
+    - name: Set flags to ensure entire stack will start
+      ansible.builtin.set_fact:
+        <<gen_role_name>>_recreate: always
+        <<gen_role_name>>_state: present
+
+    - name: State file
+      ansible.builtin.copy:
+        content: |
+          {{ now() }}
+        dest: "{{ <<gen_role_name>>_restore_marker }}"
+        owner: "{{ site_config_owner }}"
+        group: "{{ site_config_group }}"
+        mode: "0644"

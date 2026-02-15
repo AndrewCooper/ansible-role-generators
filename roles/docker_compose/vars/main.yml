@@ -4,4 +4,5 @@
 
 _gen_role_valid_overlays:
   - backup_borgmatic
+  - backup_script
   - site_postgres
