@@ -1,0 +1,5 @@
+  # traefik.enable: true
+  # traefik.http.routers.<<gen_role_name>>-<<service_item>>.entrypoints: "websecure"
+  # traefik.http.routers.<<gen_role_name>>-<<service_item>>.rule: "Host(`{{ <<gen_role_name>>_domain }}`)"
+  # traefik.http.routers.<<gen_role_name>>-<<service_item>>.service: "<<gen_role_name>>-<<service_item>>@docker"
+  # traefik.http.services.<<gen_role_name>>-<<service_item>>.loadbalancer.server.port: "{{ <<gen_role_name>>_<<service_varname>>_port_http_target }}"

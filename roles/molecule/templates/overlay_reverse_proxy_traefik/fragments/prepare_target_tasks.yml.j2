@@ -1,0 +1,7 @@
+    - name: Create traefik external network if not exists
+      become: true
+      community.docker.docker_network:
+        name: "{{ traefik_network_frontend }}"
+        state: present
+        driver: bridge
+        scope: local
