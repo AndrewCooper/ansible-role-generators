@@ -1,0 +1,65 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: MIT-0
+---
+# init service defaults file for <<gen_role_name>>
+
+########################################
+# <<gen_role_name>> init service
+########################################
+
+<<gen_role_name>>_init_build: ~
+
+<<gen_role_name>>_init_command: ~
+
+<<gen_role_name>>_init_configs:
+  - source: init_sh
+    target: /init.sh
+
+<<gen_role_name>>_init_container_name: "{{ <<gen_role_name>>_project_name }}-init"
+
+<<gen_role_name>>_init_depends_on:
+
+<<gen_role_name>>_init_dir: "{{ <<gen_role_name>>_project_dir }}/init"
+
+<<gen_role_name>>_init_entrypoint: ["/init.sh"]
+
+<<gen_role_name>>_init_env: {}
+
+<<gen_role_name>>_init_env_file: "{{ <<gen_role_name>>_init_dir }}/init.env"
+
+<<gen_role_name>>_init_environment: {}
+
+<<gen_role_name>>_init_expose:
+
+<<gen_role_name>>_init_healthcheck:
+  disable: false
+
+<<gen_role_name>>_init_hostname: ~
+
+<<gen_role_name>>_init_image: "docker.io/debian:{{ <<gen_role_name>>_init_version }}"
+
+<<gen_role_name>>_init_labels:
+
+<<gen_role_name>>_init_networks:
+  default: {}
+
+<<gen_role_name>>_init_ports:
+
+<<gen_role_name>>_init_profiles:
+  - init
+
+<<gen_role_name>>_init_restart: "no"
+
+<<gen_role_name>>_init_secrets:
+  # - database__passwd
+
+<<gen_role_name>>_init_version: "bookworm-slim"
+
+<<gen_role_name>>_init_volumes:
+  - init_data:/data
+
+########################################
+# <<gen_role_name>> init config
+########################################
+
+<<gen_role_name>>_init_force: false

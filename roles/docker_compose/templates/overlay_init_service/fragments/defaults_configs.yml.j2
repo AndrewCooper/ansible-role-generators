@@ -1,0 +1,6 @@
+  init_sh:
+    template: init.sh.j2
+    file: "{{ <<gen_role_name>>_configs_dir }}/init.sh"
+    owner: "{{ site_config_owner }}"
+    group: "{{ site_config_group }}"
+    mode: "{{ site_config_mode }}"

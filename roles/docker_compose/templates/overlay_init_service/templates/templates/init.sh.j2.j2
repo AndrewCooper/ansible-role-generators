@@ -1,0 +1,18 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# This script is used to initialize the <<gen_role_name>> volumes
+
+function create_dir {
+    local dir=$1
+    local owner=$2
+    local group=$3
+    local mode=$4
+
+    mkdir -p "$dir"
+    chown -R "$owner":"$group" "$dir"
+    chmod -R "$mode" "$dir"
+}
+
+create_dir "/data"  "{{ _<<gen_role_name>>_init_uid }}"  "{{ _<<gen_role_name>>_init_gid }}"  "0755"

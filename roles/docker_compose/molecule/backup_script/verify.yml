@@ -12,9 +12,12 @@
       register: _stat
       loop:
         - "{{ _role_dir }}/defaults/main/backup_script.yml"
+        - "{{ _role_dir }}/defaults/main/init.yml"
         - "{{ _role_dir }}/tasks/restore.yml"
+        - "{{ _role_dir }}/tasks/init.yml"
         - "{{ _role_dir }}/templates/backup.sh.j2"
         - "{{ _role_dir }}/templates/restore.sh.j2"
+        - "{{ _role_dir }}/templates/init.sh.j2"
       loop_control:
         label: "{{ item | basename }}"
 
@@ -31,9 +34,14 @@
         src: "{{ _role_dir }}/tasks/main.yml"
       register: _tasks
 
-    - name: Assert restore task is present in tasks/main.yml
+    - name: Assert restore runs before init in tasks/main.yml
       vars:
         _text: "{{ _tasks.content | b64decode }}"
+        _restore_pos: "{{ _text.find('Restore Data') }}"
+        _init_pos: "{{ _text.find('Init Data') }}"
       ansible.builtin.assert:
         that:
           - "'Restore Data' in _text"
+          - "'Init Data' in _text"
+          - "_restore_pos | int < _init_pos | int"
+        fail_msg: "restore and init tasks are missing or out of order in tasks/main.yml"

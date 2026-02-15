@@ -1,0 +1,15 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: MIT-0
+---
+# init service vars file for <<gen_role_name>>
+
+########################################
+# <<gen_role_name>> init service
+########################################
+
+# Internal user and group IDs for the service container.
+# Use these to match ownership of bind mounted files.
+_<<gen_role_name>>_init_uid: 1000
+_<<gen_role_name>>_init_gid: 1000
+
+_<<gen_role_name>>_init_marker: "{{ <<gen_role_name>>_init_dir }}/init.date.txt"

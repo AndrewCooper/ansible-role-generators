@@ -1,0 +1,53 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: MIT-0
+---
+# init tasks file for <<gen_role_name>>
+
+# *****************************************************************************
+# Test the init marker file
+
+- name: Delete state file if requested
+  when: <<gen_role_name>>_init_force | default(false)
+  ansible.builtin.file:
+    path: "{{ _<<gen_role_name>>_init_marker }}"
+    state: absent
+
+- name: Exists - state file
+  ansible.builtin.stat:
+    path: "{{ _<<gen_role_name>>_init_marker }}"
+    get_checksum: false
+  register: st_<<gen_role_name>>_init
+
+- name: Initialize <<gen_role_name>> Data
+  when: not st_<<gen_role_name>>_init.stat.exists
+  block:
+
+    # *****************************************************************************
+    # Initialize the build system data directories
+
+    - name: Initialize <<gen_role_name>> Files
+      become: true
+      community.docker.docker_compose_v2_run:
+        project_name: "{{ <<gen_role_name>>_project_name }}"
+        project_src: "{{ <<gen_role_name>>_project_dir }}"
+        cleanup: true
+        profiles:
+          - init
+        service: init
+
+    - name: State file
+      ansible.builtin.copy:
+        content: |
+          {{ now() }}
+        dest: "{{ _<<gen_role_name>>_init_marker }}"
+        owner: "{{ site_config_owner }}"
+        group: "{{ site_config_group }}"
+        mode: "0644"
+
+    - name: Set recreate flag
+      ansible.builtin.set_fact:
+        <<gen_role_name>>_recreate: auto
+
+    - name: Set state flag
+      ansible.builtin.set_fact:
+        <<gen_role_name>>_state: present
