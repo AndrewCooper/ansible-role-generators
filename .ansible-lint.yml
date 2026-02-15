@@ -117,6 +117,7 @@ kinds:
   - vars: "**/molecule/*/vars.yml"
   - inventory: "**/molecule/*/inventory.yml"
   # Treat common Molecule playbooks as playbooks so ansible-lint applies playbook rules
+  - playbook: "**/molecule/*/create.yml"
   - playbook: "**/molecule/*/prepare.yml"
   - playbook: "**/molecule/*/converge.yml"
   - playbook: "**/molecule/*/verify.yml"

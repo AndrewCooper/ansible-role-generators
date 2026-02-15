@@ -10,6 +10,10 @@ authors:
 
 license: Apache-2.0
 
+license-files:
+  - LICENSE
+  - NOTICE
+
 keywords:
   - generator
   - skeleton
@@ -21,3 +25,4 @@ urls:
   homepage: https://github.com/andrewcooper/ansible-role-generators
   repository: https://github.com/andrewcooper/ansible-role-generators
   issues: https://github.com/andrewcooper/ansible-role-generators/issues
+  changelog: CHANGELOG.md
