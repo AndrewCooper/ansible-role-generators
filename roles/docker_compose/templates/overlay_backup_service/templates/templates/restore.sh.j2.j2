@@ -1,0 +1,11 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+#!/usr/bin/env bash
+set -exo pipefail
+
+cd {{ <<gen_role_name>>_project_dir }}
+
+docker compose down --volumes --remove-orphans
+
+docker compose create
+
+docker compose run --build --rm restore

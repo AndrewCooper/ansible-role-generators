@@ -5,6 +5,7 @@
 _gen_role_valid_overlays:
   - backup_borgmatic
   - backup_script
+  - backup_service
   - init_service
   - reverse_proxy_traefik
   - site_postgres

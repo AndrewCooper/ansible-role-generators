@@ -1,0 +1,63 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: MIT-0
+---
+# backup service defaults file for <<gen_role_name>>
+
+########################################
+# <<gen_role_name>> backup service
+########################################
+
+<<gen_role_name>>_backup_build: ~
+
+<<gen_role_name>>_backup_command: ~
+
+<<gen_role_name>>_backup_configs:
+
+<<gen_role_name>>_backup_container_name: "{{ <<gen_role_name>>_project_name }}-backup"
+
+<<gen_role_name>>_backup_depends_on:
+
+<<gen_role_name>>_backup_dir: "{{ <<gen_role_name>>_project_dir }}/backup"
+
+<<gen_role_name>>_backup_entrypoint: ~
+
+<<gen_role_name>>_backup_env: {}
+
+<<gen_role_name>>_backup_env_file: "{{ <<gen_role_name>>_backup_dir }}/backup.env"
+
+<<gen_role_name>>_backup_environment: {}
+
+<<gen_role_name>>_backup_expose:
+
+<<gen_role_name>>_backup_healthcheck:
+  disable: false
+
+<<gen_role_name>>_backup_hostname: ~
+
+<<gen_role_name>>_backup_image: "docker.io/<<gen_role_name>>-backup:{{ <<gen_role_name>>_backup_version }}"
+
+<<gen_role_name>>_backup_labels:
+
+<<gen_role_name>>_backup_networks:
+  default: {}
+
+<<gen_role_name>>_backup_ports:
+
+<<gen_role_name>>_backup_profiles:
+
+<<gen_role_name>>_backup_restart: 'no'
+
+<<gen_role_name>>_backup_secrets:
+  # - database__passwd
+
+<<gen_role_name>>_backup_version: "latest"
+
+<<gen_role_name>>_backup_volumes:
+
+########################################
+# <<gen_role_name>> backup config
+########################################
+
+<<gen_role_name>>_backup_data_dir: "{{ site_backup_data_dir }}/<<gen_role_name>>"
+
+<<gen_role_name>>_backup_script: "{{ site_backup_script_dir | default(<<gen_role_name>>_project_dir) }}/55.backup.<<gen_role_name>>"

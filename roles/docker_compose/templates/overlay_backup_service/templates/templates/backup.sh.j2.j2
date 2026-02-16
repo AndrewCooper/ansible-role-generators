@@ -1,0 +1,10 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+#!/usr/bin/env bash
+set -exo pipefail
+
+#===============================================================================
+# Backup <<gen_role_name>>
+mkdir -p {{ <<gen_role_name>>_backup_data_dir }}
+
+cd {{ <<gen_role_name>>_project_dir }}
+docker compose run --rm backup

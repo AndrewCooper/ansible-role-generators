@@ -1,0 +1,69 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: MIT-0
+---
+# restore service defaults file for <<gen_role_name>>
+
+########################################
+# <<gen_role_name>> restore service
+########################################
+
+<<gen_role_name>>_restore_build: ~
+
+<<gen_role_name>>_restore_command: ~
+
+<<gen_role_name>>_restore_configs:
+
+<<gen_role_name>>_restore_container_name: "{{ <<gen_role_name>>_project_name }}-restore"
+
+<<gen_role_name>>_restore_depends_on:
+
+<<gen_role_name>>_restore_dir: "{{ <<gen_role_name>>_project_dir }}/restore"
+
+<<gen_role_name>>_restore_entrypoint: ~
+
+<<gen_role_name>>_restore_env: {}
+
+<<gen_role_name>>_restore_env_file: "{{ <<gen_role_name>>_restore_dir }}/restore.env"
+
+<<gen_role_name>>_restore_environment: {}
+
+<<gen_role_name>>_restore_expose:
+
+<<gen_role_name>>_restore_healthcheck:
+  disable: false
+
+<<gen_role_name>>_restore_hostname: ~
+
+<<gen_role_name>>_restore_image: "docker.io/<<gen_role_name>>-restore:{{ <<gen_role_name>>_restore_version }}"
+
+<<gen_role_name>>_restore_labels:
+
+<<gen_role_name>>_restore_networks:
+  default: {}
+
+<<gen_role_name>>_restore_ports:
+
+<<gen_role_name>>_restore_profiles:
+
+<<gen_role_name>>_restore_restart: 'no'
+
+<<gen_role_name>>_restore_secrets:
+  # - database__passwd
+
+<<gen_role_name>>_restore_version: "latest"
+
+<<gen_role_name>>_restore_volumes:
+
+########################################
+# <<gen_role_name>> restore config
+########################################
+
+<<gen_role_name>>_restore_data_dir: "{{ site_restore_data_dir }}/<<gen_role_name>>"
+
+<<gen_role_name>>_restore_force: false
+
+<<gen_role_name>>_restore_marker: "{{ <<gen_role_name>>_project_dir }}/restore.date.txt"
+
+<<gen_role_name>>_restore_script: "{{ site_restore_script_dir | default(<<gen_role_name>>_project_dir) }}/55.restore.<<gen_role_name>>"
+
+<<gen_role_name>>_restore_skip: false
