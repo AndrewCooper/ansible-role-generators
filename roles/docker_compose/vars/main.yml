@@ -7,5 +7,7 @@ _gen_role_valid_overlays:
   - backup_script
   - backup_service
   - init_service
+  - local_image_source
+  - remote_image_source
   - reverse_proxy_traefik
   - site_postgres

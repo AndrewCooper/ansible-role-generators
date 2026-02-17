@@ -1,0 +1,33 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: MIT-0
+---
+# source sync tasks file for <<gen_role_name>>
+
+- name: Ensure rsync tools are installed
+  become: true
+  ansible.builtin.package:
+    name:
+      - rsync
+    state: present
+
+- name: Make source directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ <<gen_role_name>>_source_dir }}"
+    state: directory
+    owner: "{{ site_config_owner }}"
+    group: "{{ site_config_group }}"
+    mode: "{{ site_config_mode }}"
+
+- name: Synchronize source
+  ansible.posix.synchronize:
+    archive: true
+    checksum: true
+    compress: true
+    delete: true
+    owner: false
+    group: false
+    perms: false
+    src: "{{ <<gen_role_name>>_source_path }}/"
+    dest: "{{ <<gen_role_name>>_source_dir }}/"
+  notify: <<gen_role_name>> definition changed
