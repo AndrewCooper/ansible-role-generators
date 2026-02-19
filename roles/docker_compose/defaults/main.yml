@@ -15,7 +15,7 @@ gen_role_tld: "example.com"
 
 gen_role_services: [app]
 
-gen_role_overlays:
+gen_role_overlays: []
 
 gen_meta_namespace: "my_namespace"
 gen_meta_author: "Firstname Lastname"

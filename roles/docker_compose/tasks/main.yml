@@ -6,6 +6,15 @@
   ansible.builtin.set_fact:
     gen_role_name: "{{ gen_role_name | to_varname }}"
 
+- name: Validate overlay list
+  ansible.builtin.assert:
+    that:
+      - gen_role_overlays is subset(_gen_role_valid_overlays)
+    fail_msg: |
+      Overlay list '{{ gen_role_overlays }}' is not valid for this role.
+      Valid overlays are:
+        {{ _gen_role_valid_overlays }}
+
 - name: Capture current working directory
   when: gen_dest_dir is not defined
   ansible.builtin.set_fact:
