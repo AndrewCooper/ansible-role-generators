@@ -9,5 +9,6 @@ _gen_role_valid_overlays:
   - init_service
   - local_image_source
   - remote_image_source
+  - reverse_proxy_haproxy
   - reverse_proxy_traefik
   - site_postgres

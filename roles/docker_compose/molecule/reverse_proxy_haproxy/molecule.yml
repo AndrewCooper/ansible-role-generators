@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+lint: |
+  set -e
+  yamllint .
+  ansible-lint
+
+platforms: []
+
+ansible:
+  executor:
+    backend: ansible-playbook
+    args:
+      ansible_playbook:
+        - --inventory=inventory.yml
+        - --verbose
+        - --diff
+  env:
+    ANSIBLE_CALLBACK_RESULT_FORMAT: yaml
+    ANSIBLE_CALLBACK_FORMAT_PRETTY: true
+    ANSIBLE_ROLES_PATH: "../../.."
+    ANSIBLE_FILTER_PLUGINS: "../../../../filter_plugins"
+  playbooks:
+    converge: converge.yml
+    verify: verify.yml
+
+verifier:
+  name: ansible
