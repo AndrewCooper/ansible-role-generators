@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+name: ansible-role-generators
+version: 1.0.0
+description: A standalone Ansible-based scaffolding tool for generating opinionated Ansible roles
+
+authors:
+  - name: Andrew Cooper
+    email: me@andrewcooper.me
+
+license: Apache-2.0
+
+keywords:
+  - generator
+  - skeleton
+  - ansible
+
+readme: README.md
+
+urls:
+  homepage: https://github.com/andrewcooper/ansible-role-generators
+  repository: https://github.com/andrewcooper/ansible-role-generators
+  issues: https://github.com/andrewcooper/ansible-role-generators/issues
