@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# defaults file for docker_compose
+
+gen_rootdir_roles: "{{ gen_dest_dir }}/roles"
+gen_rootdir_playbooks: "{{ gen_dest_dir }}/playbooks"
+gen_rootdir_group_vars: "{{ gen_dest_dir }}/group_vars"
+
+# gen_role_name: prompt from user
+gen_role_dir_prefix: "" # e.g. "docker_"
+gen_role_dir_name: "{{ gen_role_dir_prefix }}{{ gen_role_name }}"
+gen_role_dir_path: "{{ gen_rootdir_roles }}/{{ gen_role_dir_name }}"
+
+gen_role_tld: "example.com"
+
+gen_role_services: [app]
+
+gen_role_overlays:
+
+gen_meta_namespace: "my_namespace"
+gen_meta_author: "Firstname Lastname"
+gen_meta_description: "Ansible role for deploying {{ gen_role_name }} via Docker Compose"
+gen_meta_company: "Example Company"
+gen_meta_issue_tracker_url: "https://git.example.com/my_namespace/{{ gen_role_name }}/issues"
+gen_meta_license: "Apache-2.0"
+gen_meta_min_ansible_version: "2.16.14"
+gen_meta_dependencies: []
+
+gen_playbook_enable: 'true'
+gen_playbook_prefix: "p_"
+gen_playbook_name: "{{ gen_playbook_prefix }}{{ gen_role_name }}.yml"
+
+gen_group_vars_enable: 'true'
+gen_group_vars_groups: [all]
+
+gen_ssh_keypair_enable: 'true'
+gen_ssh_keypair_type: ed25519
+gen_ssh_keypair_name: "id_{{ gen_ssh_keypair_type }}_{{ gen_role_name }}"
+
+gen_vaulted_vars_enable: 'true'
+gen_vaulted_vars_groups: [all]
+
+gen_file_filter: '.*'

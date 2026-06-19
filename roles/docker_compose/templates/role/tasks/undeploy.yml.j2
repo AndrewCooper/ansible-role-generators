@@ -1,0 +1,34 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+# undeploy tasks file for <<gen_role_name>>
+
+# Full teardown for <<gen_role_name>> project
+# 1) Bring down compose stack (down)
+# 2) Remove containers in reverse creation order (best-effort)
+# 3) Remove generated configs, secrets and generated files
+# 4) Optionally remove project directory
+
+- name: Check if project directory exists
+  ansible.builtin.stat:
+    path: "{{ <<gen_role_name>>_project_dir }}"
+  register: st_<<gen_role_name>>_project_dir
+
+- name: Teardown <<gen_role_name>> project - bring down compose stack
+  when: st_<<gen_role_name>>_project_dir.stat.exists
+  become: true
+  community.docker.docker_compose_v2:
+    project_name: "{{ <<gen_role_name>>_project_name }}"
+    project_src: "{{ <<gen_role_name>>_project_dir }}"
+    state: absent
+    remove_orphans: true
+    remove_volumes: "{{ <<gen_role_name>>_remove_volumes | default(false) }}"
+
+- name: Brief pause to allow docker to settle
+  ansible.builtin.pause:
+    seconds: 2
+
+- name: Remove the project directory
+  ansible.builtin.file:
+    path: "{{ <<gen_role_name>>_project_dir }}"
+    state: absent

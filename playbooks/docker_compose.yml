@@ -1,0 +1,32 @@
+#!/usr/bin/env -S ansible-playbook
+# SPDX-License-Identifier: Apache-2.0
+---
+# Template playbook — copy and customize for your environment.
+# Set role_vars_dir to a directory containing common.yml and optional
+# per-role <gen_role_name>.yml files to inject site-specific defaults.
+
+- name: Generate a new Ansible Role for Docker Compose deployment
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+  vars:
+    role_vars_dir: role_vars
+  vars_prompt:
+    - name: gen_role_name
+      prompt: "Enter the new role name (e.g., my_service)"
+      private: false
+
+  tasks:
+    - name: Include common variables
+      ansible.builtin.include_vars:
+        file: "{{ role_vars_dir }}/common.yml"
+
+    - name: Include role-specific variables if present
+      ansible.builtin.include_vars:
+        file: "{{ role_vars_dir }}/{{ gen_role_name }}.yml"
+      when: lookup('ansible.builtin.fileglob', role_vars_dir + '/' + gen_role_name + '.yml') | length > 0
+
+    - name: Generate a Docker Compose role
+      ansible.builtin.include_role:
+        name: docker_compose

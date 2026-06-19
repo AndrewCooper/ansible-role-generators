@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+# Playbook for {{ gen_role_name }}
+
+- name: Deploy {{ gen_role_name }} service
+  hosts: {{ gen_role_name }}
+  become: false
+  gather_facts: true
+  roles:
+    - role: site_config
+      become: true
+    - role: {{ gen_role_dir_name }}
+      tags: {{ gen_role_name }}

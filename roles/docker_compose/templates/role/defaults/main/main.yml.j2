@@ -1,0 +1,74 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+# main defaults file for <<gen_role_name>>
+
+########################################
+# <<gen_role_name>> domain names
+########################################
+<<gen_role_name>>_domain: "<<gen_role_name>>.<<gen_role_tld>>"
+
+
+########################################
+# <<gen_role_name>> project
+########################################
+<<gen_role_name>>_project_composefile: "{{ <<gen_role_name>>_project_dir }}/docker-compose.yml"
+<<gen_role_name>>_project_dir: "{{ site_config_dir }}/{{ <<gen_role_name>>_project_name }}"
+<<gen_role_name>>_project_name: "<<gen_role_name>>"
+
+
+########################################
+# <<gen_role_name>> configs
+########################################
+<<gen_role_name>>_configs_dir: "{{ <<gen_role_name>>_project_dir }}/configs"
+<<gen_role_name>>_configs:
+  example_config:
+    template: "example_config.j2"
+    file: "{{ <<gen_role_name>>_configs_dir }}/example_config.conf"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0640"
+    backup: true
+
+########################################
+# <<gen_role_name>> networks
+########################################
+<<gen_role_name>>_networks:
+  default:
+    driver: bridge
+
+
+########################################
+# <<gen_role_name>> secrets
+########################################
+<<gen_role_name>>_secrets_dir: "{{ <<gen_role_name>>_project_dir }}/secrets"
+<<gen_role_name>>_secrets:
+  example_secret:
+    src: "file-path-to-copy-to-secret"
+    content: "OR content to write to secret file"
+    file: "{{ <<gen_role_name>>_secrets_dir }}/example_secret"
+    owner: "{{ site_config_owner }}"
+    group: "{{ site_config_group }}"
+    mode: "{{ site_config_mode }}"
+  # database__passwd:
+  #   content: "{{ postgres_roles.<<gen_role_name>>.password }}"
+  #   file: "{{ <<gen_role_name>>_secrets_dir }}/database__passwd"
+
+
+########################################
+# <<gen_role_name>> services
+########################################
+<<gen_role_name>>_service_names:
+<% for service in gen_role_services %>
+  - <<service>>
+<% endfor %>
+
+
+########################################
+# <<gen_role_name>> volumes
+########################################
+<<gen_role_name>>_volumes:
+<% for service in gen_role_services %>
+  <<service|to_varname>>_data:
+    driver: local
+<% endfor %>

@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# ssh_keypair tasks file for docker_compose role_generator
+
+- name: Generate SSH Keypair for service
+  when:
+    - gen_ssh_keypair_enable | bool
+    - (gen_only_files is not none)
+      or
+      ('sshkey' | regex_search(gen_only_files) is not none)
+  community.crypto.openssh_keypair:
+    path: "{{ gen_role_dir_path }}/files/{{ gen_ssh_keypair_name }}"
+    type: "{{ gen_ssh_keypair_type }}"
+    comment: "{{ gen_role_name }}@{{ gen_role_tld }}"
+    passphrase: "{{ gen_ssh_keypair_passphrase | default(omit) }}"
+  register: ssh_keypair

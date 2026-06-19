@@ -1,0 +1,46 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+# service tasks file for <<gen_role_name>>
+# looped over <<gen_role_name>>_service_names
+
+- name: Find local vars for <<gen_role_name>> {{ item }} service
+  ansible.builtin.set_fact:
+    service_dir__vars: >-
+      {{ query('varnames', ('^<<gen_role_name>>_' ~ item ~ '_dir$') | replace('-', '_')) }}
+    service_env__vars: >-
+      {{ query('varnames', ('^<<gen_role_name>>_' ~ item ~ '_env$') | replace('-', '_')) }}
+    service_env_file__vars: >-
+      {{ query('varnames', ('^<<gen_role_name>>_' ~ item ~ '_env_file$') | replace('-', '_')) }}
+
+- name: Create local vars for <<gen_role_name>> {{ item }} service
+  ansible.builtin.set_fact:
+    service_dir: "{{
+      lookup('vars', *service_dir__vars)
+      | default((<<gen_role_name>>_project_dir, item) | path_join)
+      }}"
+    service_env: "{{
+      lookup('vars', *service_env__vars)
+      | default({})
+      }}"
+    service_env_file: "{{
+      lookup('vars', *service_env_file__vars)
+      | default((<<gen_role_name>>_project_dir, item, item ~ '.env') | path_join)
+      }}"
+
+- name: Create <<gen_role_name>> {{ item }} directory
+  ansible.builtin.file:
+    path: "{{ service_dir }}"
+    state: directory
+    owner: "{{ site_config_owner }}"
+    group: "{{ site_config_group }}"
+    mode: "{{ site_config_mode }}"
+
+- name: Generate <<gen_role_name>> {{ item }} environment file
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ service_env_file }}"
+    owner: "{{ site_config_owner }}"
+    group: "{{ site_config_group }}"
+    mode: "{{ site_config_mode }}"
+  notify: <<gen_role_name>> definition changed

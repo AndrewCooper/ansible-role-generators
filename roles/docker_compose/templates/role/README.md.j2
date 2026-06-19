@@ -1,0 +1,71 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# <<gen_role_dir_name>>
+
+<<gen_meta_description>>
+
+## Requirements
+
+- Docker and Docker Compose running on the target host
+- `community.docker` collection
+
+## Role Variables
+
+Variables follow the pattern `<<gen_role_name>>_<key>` for role-wide settings and `<<gen_role_name>>_<service>_<key>` for per-service settings. Defaults are in `defaults/main/`.
+
+### Role-wide
+
+| Variable | Purpose |
+|---|---|
+| `<<gen_role_name>>_project_dir` | Directory on the target host where the Compose project lives |
+| `<<gen_role_name>>_composefile` | Path to the rendered `docker-compose.yml` |
+| `<<gen_role_name>>_domain` | FQDN for the service (`<<gen_role_name>>.<<gen_role_tld>>` by default) |
+| `<<gen_role_name>>_configs` | Dict of config file specs (see Configs below) |
+| `<<gen_role_name>>_secrets` | Dict of secret file specs (see Secrets below) |
+
+### Per-service
+
+Each entry in `gen_role_services` gets its own defaults block. Common keys for each service `<svc>`:
+
+| Variable | Purpose |
+|---|---|
+| `<<gen_role_name>>_<svc>_image` | Container image |
+| `<<gen_role_name>>_<svc>_version` | Image tag |
+| `<<gen_role_name>>_<svc>_ports` | Published ports |
+| `<<gen_role_name>>_<svc>_volumes` | Volume mounts |
+| `<<gen_role_name>>_<svc>_environment` | Environment variables |
+| `<<gen_role_name>>_<svc>_restart` | Restart policy |
+
+The `docker-compose.yml.j2` template renders only keys that are non-null, so unused keys can be left at their defaults without appearing in the output.
+
+## Configs
+
+`tasks/configs.yml` manages files in `<<gen_role_name>>_configs_dir`. Each entry in `<<gen_role_name>>_configs` is a dict keyed by a label. The delivery mode is determined by which key is present:
+
+```yaml
+<<gen_role_name>>_configs:
+  my_config:
+    template: my_config.j2   # render a Jinja2 template from templates/
+    file: /etc/app/config
+    owner: root
+    mode: "0644"
+  another_config:
+    content: "inline content" # write a literal string
+    file: /etc/app/other
+  third_config:
+    src: files/config.conf    # copy a file from files/ without rendering
+    file: /etc/app/third
+```
+
+Only one of `template`, `content`, or `src` should be set per entry. `owner`, `group`, and `mode` fall back to `site_config_owner`, `site_config_group`, and `site_config_mode` if not specified.
+
+## Secrets
+
+`tasks/secrets.yml` works identically to configs but with `no_log: true` on all tasks. Use `<<gen_role_name>>_secrets` and `<<gen_role_name>>_secrets_dir`.
+
+## License
+
+<<gen_meta_license>>
+
+## Author
+
+<<gen_meta_author>> — <<gen_meta_company>>

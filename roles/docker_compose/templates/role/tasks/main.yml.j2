@@ -1,0 +1,50 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+# tasks file for <<gen_role_name>>
+
+- name: Create project configuration directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ <<gen_role_name>>_project_dir }}"
+    state: directory
+    owner: "{{ site_config_owner }}"
+    group: "{{ site_config_group }}"
+    mode: "{{ site_config_mode }}"
+
+- name: Generate Docker Compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ <<gen_role_name>>_project_composefile }}"
+    owner: "{{ site_config_owner }}"
+    group: "{{ site_config_group }}"
+    mode: "{{ site_config_mode }}"
+    backup: true
+  notify: <<gen_role_name>> definition changed
+
+- name: Generate <<gen_role_name>> service files
+  ansible.builtin.include_tasks: service_each.yml
+  loop: "{{ <<gen_role_name>>_service_names }}"
+
+- name: Generate <<gen_role_name>> config files
+  ansible.builtin.import_tasks: configs.yml
+
+- name: Generate <<gen_role_name>> secret files
+  ansible.builtin.import_tasks: secrets.yml
+
+- name: Flush Config Change Handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Restore Data if needed
+  ansible.builtin.import_tasks: restore.yml
+
+- name: Deploy project
+  become: true
+  community.docker.docker_compose_v2:
+    build: always
+    project_name: "{{ <<gen_role_name>>_project_name }}"
+    project_src: "{{ <<gen_role_name>>_project_dir }}"
+    state: "{{ <<gen_role_name>>_state | default('present') }}"
+    recreate: "{{ <<gen_role_name>>_recreate | default(omit) }}"
+  register: _<<gen_role_name>>_deploy_result
+  tags: deploy_<<gen_role_name>>

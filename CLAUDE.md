@@ -73,4 +73,4 @@ Generated role variables follow the pattern `{{ gen_role_name }}_{{ service_name
 
 ### SPDX License Headers
 
-Generator files use `Apache-2.0`. Generated role files use `MIT-0`.
+Generator files use `Apache-2.0`. Generated role files use `<<gen_meta_license>>`.

@@ -1,0 +1,81 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+
+name: "{{ <<gen_role_name>>_project_name }}"
+
+
+{{
+  dict(configs=(
+    <<gen_role_name>>_configs
+    | default({}, boolean=true)
+    | ansible.utils.keep_keys('file')
+  ))
+  | to_nice_yaml()
+}}
+
+
+{{
+  dict(networks=(
+    <<gen_role_name>>_networks
+    | default({}, boolean=true)
+  ))
+  | to_nice_yaml()
+}}
+
+
+{{
+  dict(secrets=(
+    <<gen_role_name>>_secrets
+    | default({}, boolean=true)
+    | ansible.utils.keep_keys('file')
+  ))
+  | to_nice_yaml()
+}}
+
+
+services:
+{# canonical set of Docker Compose service keys to check for per-service vars #}
+{%- set service_keys = [
+  'annotations','attach','build','blkio_config','cpu_count','cpu_percent','cpu_shares','cpu_period',
+  'cpu_quota','cpu_rt_runtime','cpu_rt_period','cpus','cpuset','cap_add','cap_drop','cgroup',
+  'cgroup_parent','command','configs','container_name','credential_spec','depends_on','deploy',
+  'develop','device_cgroup_rules','devices','dns','dns_opt','dns_search','domainname','entrypoint',
+  'env_file','environment','expose','extends','external_links','extra_hosts','gpus','group_add',
+  'healthcheck','hostname','image','init','ipc','isolation','labels','label_file','links','logging',
+  'mac_address','mem_limit','mem_reservation','mem_swappiness','memswap_limit','models',
+  'network_mode','networks','oom_kill_disable','oom_score_adj','pid','pids_limit','platform','ports',
+  'post_start','pre_stop','privileged','profiles','provider','pull_policy','read_only','restart',
+  'runtime','scale','secrets','security_opt','shm_size','stdin_open','stop_grace_period',
+  'stop_signal','storage_opt','sysctls','tmpfs','tty','ulimits','use_api_socket','user',
+  'userns_mode','uts','volumes','volumes_from','working_dir'
+] %}
+{%- for svc_name in <<gen_role_name>>_service_names -%}
+  {%- set ns = namespace(merged={}) -%}
+  {%- for k in service_keys -%}
+    {%- set svc_varname = ('<<gen_role_name>>_' + svc_name + '_' + k) | replace('-', '_') -%}
+    {%- set k_var = lookup('ansible.builtin.varnames', '^' ~ svc_varname ~ '$') -%}
+    {%- if k_var -%}
+      {%- set k_val = lookup('ansible.builtin.vars', svc_varname) -%}
+      {%- if k_val is not none and k_val != '' -%}
+        {%- set ns.merged = ns.merged | combine({ (k): k_val }) -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- if ns.merged +%}
+  {{ { svc_name: ns.merged }
+  | to_nice_yaml()
+  | indent(width=2)
+  }}
+
+  {%- endif -%}
+{%- endfor -%}
+
+
+{{
+  dict(volumes=(
+    <<gen_role_name>>_volumes
+    | default({}, boolean=true)
+  ))
+  | to_nice_yaml()
+}}

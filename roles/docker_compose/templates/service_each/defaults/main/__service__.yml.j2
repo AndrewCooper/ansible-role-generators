@@ -1,0 +1,78 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+<%- set service_varname = service_item | to_varname -%>
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+# defaults file for <<gen_role_name>> <<service>> service
+
+########################################
+# <<gen_role_name>> <<service>> service
+########################################
+
+<<gen_role_name>>_<<service_varname>>_build: ~
+
+<<gen_role_name>>_<<service_varname>>_command: ~
+
+<<gen_role_name>>_<<service_varname>>_configs:
+
+<<gen_role_name>>_<<service_varname>>_container_name: "{{ <<gen_role_name>>_project_name }}-<<service_item>>"
+
+<<gen_role_name>>_<<service_varname>>_depends_on:
+
+<<gen_role_name>>_<<service_varname>>_dir: "{{ <<gen_role_name>>_project_dir }}/<<service_varname>>"
+
+<<gen_role_name>>_<<service_varname>>_entrypoint: ~
+
+<<gen_role_name>>_<<service_varname>>_env: {}
+
+<<gen_role_name>>_<<service_varname>>_env_file: "{{ <<gen_role_name>>_<<service_varname>>_dir }}/<<service_varname>>.env"
+
+<<gen_role_name>>_<<service_varname>>_environment: {}
+
+<<gen_role_name>>_<<service_varname>>_expose:
+  - "{{ <<gen_role_name>>_<<service_varname>>_port_http_target }}"
+
+<<gen_role_name>>_<<service_varname>>_healthcheck:
+  disable: false
+  # test: ["CMD", "curl", "-f", "http://localhost:{{ <<gen_role_name>>_<<service_varname>>_port_http_target }}/"]
+  # interval: 5s
+  # timeout: 5s
+  # retries: 5
+
+<<gen_role_name>>_<<service_varname>>_hostname: ~
+
+<<gen_role_name>>_<<service_varname>>_image: "docker.io/<<gen_role_name>>-<<service_item>>:{{ <<gen_role_name>>_<<service_varname>>_version }}"
+
+<<gen_role_name>>_<<service_varname>>_labels:
+
+<<gen_role_name>>_<<service_varname>>_networks:
+  default: {}
+
+<<gen_role_name>>_<<service_varname>>_port_http_hostip: 0.0.0.0
+<<gen_role_name>>_<<service_varname>>_port_http_published: 80
+<<gen_role_name>>_<<service_varname>>_port_http_target: 80
+
+<<gen_role_name>>_<<service_varname>>_ports:
+  - name: "http"
+    host_ip: "{{ <<gen_role_name>>_<<service_varname>>_port_http_hostip }}"
+    published: "{{ <<gen_role_name>>_<<service_varname>>_port_http_published }}"
+    target: "{{ <<gen_role_name>>_<<service_varname>>_port_http_target }}"
+    protocol: "tcp"
+    mode: "ingress"
+
+<<gen_role_name>>_<<service_varname>>_profiles:
+
+<<gen_role_name>>_<<service_varname>>_restart: unless-stopped
+
+<<gen_role_name>>_<<service_varname>>_secrets:
+  # - database__passwd
+
+<<gen_role_name>>_<<service_varname>>_version: "latest"
+
+<<gen_role_name>>_<<service_varname>>_volumes:
+  - <<service_varname>>_data:/data
+
+########################################
+# <<gen_role_name>> <<service_item>> config
+########################################
+
+<<gen_role_name>>_<<service_varname>>_cfg_my_setting: "example value"

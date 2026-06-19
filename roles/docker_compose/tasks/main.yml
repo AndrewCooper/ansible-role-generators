@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# main tasks file for docker_compose role_generator
+
+- name: Ensure role name is valid
+  ansible.builtin.set_fact:
+    gen_role_name: "{{ gen_role_name | to_varname }}"
+
+- name: Capture current working directory
+  when: gen_dest_dir is not defined
+  ansible.builtin.set_fact:
+    gen_dest_dir: "{{ lookup('ansible.builtin.env', 'PWD') }}"
+
+- name: Deploy role from skeleton template
+  ansible.builtin.include_tasks:
+    file: role.yml
+
+- name: Deploy playbook from skeleton template
+  when: gen_playbook_enable
+  ansible.builtin.include_tasks:
+    file: playbook.yml
+
+- name: Deploy group_vars from skeleton template
+  when: gen_group_vars_enable
+  ansible.builtin.include_tasks:
+    file: group_vars.yml
+
+- name: Deploy vaulted vars from skeleton template
+  when: gen_vaulted_vars_enable
+  ansible.builtin.include_tasks:
+    file: vaulted_vars.yml
+
+- name: Deploy SSH key pair from skeleton template
+  when: gen_ssh_keypair_enable
+  ansible.builtin.include_tasks:
+    file: ssh_keypair.yml
+
+- name: Deploy service defaults from skeleton template
+  ansible.builtin.include_tasks:
+    file: service_each.yml
+  loop: "{{ gen_role_services }}"
+  loop_control:
+    loop_var: service_name

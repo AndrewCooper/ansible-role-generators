@@ -1,0 +1,14 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+<%- set service_varname = service_item | to_varname -%>
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+# <<service_item>> service vars file for <<gen_role_name>>
+
+########################################
+# <<gen_role_name>> <<service_item>> service
+########################################
+
+# Internal user and group IDs for the service container.
+# Use these to match ownership of bind mounted files.
+_<<gen_role_name>>_<<service_varname>>_uid: 1000
+_<<gen_role_name>>_<<service_varname>>_gid: 1000

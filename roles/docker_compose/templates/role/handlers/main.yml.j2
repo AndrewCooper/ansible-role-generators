@@ -1,0 +1,14 @@
+#jinja2:variable_start_string:'<<', variable_end_string:'>>', block_start_string:'<%', block_end_string:'%>'
+# SPDX-License-Identifier: <<gen_meta_license>>
+---
+# handlers file for <<gen_role_name>>
+
+- name: Set recreate flag on config change
+  listen: <<gen_role_name>> config changed
+  ansible.builtin.set_fact:
+    <<gen_role_name>>_recreate: always
+
+- name: Set recreate flag on definition change
+  listen: <<gen_role_name>> definition changed
+  ansible.builtin.set_fact:
+    <<gen_role_name>>_recreate: always
