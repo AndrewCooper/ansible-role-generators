@@ -1,0 +1,22 @@
+
+
+########################################
+# Site PostgreSQL mock settings
+########################################
+postgres_domain: postgres.local
+postgres_port: 5432
+
+postgres_roles:
+  <<gen_role_name>>:
+    username: "<<gen_role_name>>"
+    password: "MOLECULE_TEST_POSTGRES_PASSWORD"
+    role_attr_flags: NOINHERIT,LOGIN
+
+postgres_databases:
+  <<gen_role_name>>:
+    name: <<gen_role_name>>db
+    owner: "<<gen_role_name>>"
+    template: template0
+    encoding: UTF8
+    lc_collate: 'en_US.UTF-8'
+    lc_ctype: 'en_US.UTF-8'
