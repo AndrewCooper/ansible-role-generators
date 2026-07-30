@@ -29,6 +29,7 @@
     seconds: 2
 
 - name: Remove the project directory
+  become: true
   ansible.builtin.file:
     path: "{{ <<gen_role_name>>_project_dir }}"
     state: absent
